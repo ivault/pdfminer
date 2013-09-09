@@ -297,10 +297,53 @@ class LTExpandableContainer(LTContainer):
         LTContainer.__init__(self, (+INF,+INF,-INF,-INF))
         return
 
+    def set_bbox(self, arg):
+        # Intentional no-op
+        pass
+
+    @property
+    def x0(self):
+        x0, _, _, _ = self.bbox
+        return x0
+
+    @property
+    def x1(self):
+        _, _, x1, _ = self.bbox
+        return x1
+
+    @property
+    def y0(self):
+        _, y0, _, _ = self.bbox
+        return y0
+
+    @property
+    def y1(self):
+        _, _, _, y1 = self.bbox
+        return y1
+
+    @property
+    def width(self):
+        x0, _, x1, _ = self.bbox
+        return abs(x1 - x0)
+
+    @property
+    def height(self):
+        _, y0, _, y1 = self.bbox
+        return abs(y1 - y0)
+
+    @property
+    def bbox(self):
+        if self._bbox is None:
+            x0s, x1s = zip(*[(o.x0, o.x1) for o in self._objs])
+            y0s, y1s = zip(*[(o.y0, o.y1) for o in self._objs])
+            self._bbox = (min(x0s), min(y0s), max(x1s), max(y1s))
+        return self._bbox
+
     def add(self, obj):
+        self._bbox = None
         LTContainer.add(self, obj)
-        self.set_bbox((min(self.x0, obj.x0), min(self.y0, obj.y0),
-                       max(self.x1, obj.x1), max(self.y1, obj.y1)))
+        #self.set_bbox((min(self.x0, obj.x0), min(self.y0, obj.y0),
+                       #max(self.x1, obj.x1), max(self.y1, obj.y1)))
         return
 
 
